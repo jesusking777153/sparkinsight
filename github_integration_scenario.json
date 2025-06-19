@@ -1,0 +1,265 @@
+{
+  "name": "GitHub_블로그자동화_통합시나리오_20250620",
+  "description": "GitHub Repository 연동 + AI 블로그 자동화 완전 통합 시스템",
+  "flow": [
+    {
+      "id": 1,
+      "module": "github:watchFiles",
+      "version": 1,
+      "parameters": {
+        "repository": "YOUR_GITHUB_USERNAME/blog-automation",
+        "branch": "main",
+        "path": "data/",
+        "events": ["push"]
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": {}
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:set-variables",
+      "version": 1,
+      "parameters": {
+        "variables": [
+          {
+            "name": "today",
+            "value": "{{formatDate(now; \"YYYY년 MM월 DD일\")}}"
+          },
+          {
+            "name": "file_type",
+            "value": "{{if(contains(1.path; \".csv\"); \"keywords\"; if(contains(1.path; \".json\"); \"products\"; \"other\"))}}"
+          }
+        ]
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 300, "y": 0 }
+      }
+    },
+    {
+      "id": 3,
+      "module": "github:getFileContent",
+      "version": 1,
+      "parameters": {
+        "repository": "YOUR_GITHUB_USERNAME/blog-automation",
+        "branch": "main"
+      },
+      "mapper": {
+        "path": "{{1.path}}"
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 0 }
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:router",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "routes": [
+        {
+          "id": "keywords_route",
+          "filter": {
+            "name": "Keywords CSV Route",
+            "conditions": [
+              {
+                "field": "{{2.file_type}}",
+                "operator": "equal",
+                "value": "keywords"
+              }
+            ]
+          }
+        },
+        {
+          "id": "products_route", 
+          "filter": {
+            "name": "Products JSON Route",
+            "conditions": [
+              {
+                "field": "{{2.file_type}}",
+                "operator": "equal", 
+                "value": "products"
+              }
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "designer": { "x": 900, "y": 0 }
+      }
+    },
+    {
+      "id": 5,
+      "module": "openai:FunctionCall",
+      "version": 1,
+      "parameters": {
+        "model": "gpt-4o",
+        "temperature": 0.8,
+        "max_tokens": 4000
+      },
+      "mapper": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 20250619 최종 지침을 완벽히 숙지한 SEO 블로그 전문 작가입니다. GitHub에서 받은 키워드 CSV 데이터를 분석하여 최고 품질의 블로그 글을 작성합니다."
+          },
+          {
+            "role": "user",
+            "content": "다음 키워드 데이터를 분석하여 우선순위가 가장 높은 키워드로 블로그 글을 작성해주세요:\n\n{{3.content}}\n\n요구사항:\n1. 20250619 최종 지침 100% 적용\n2. 채팅체 극대화 (ㅎㅎㅎ, ㅋㅋㅋ, ~더라구요)\n3. 개인 경험담 3개 이상 포함\n4. 3,500자 이상 작성\n5. SEO 최적화 완벽 적용\n6. HTML H2, H3 태그 사용\n7. 표와 리스트 포함\n8. 30대 여성 스타일로 친근하게\n\n가장 우선순위 높은 키워드 1개를 선택하여 완벽한 블로그 글을 작성해주세요."
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 1200, "y": -100 },
+        "route": "keywords_route"
+      }
+    },
+    {
+      "id": 6,
+      "module": "openai:FunctionCall", 
+      "version": 1,
+      "parameters": {
+        "model": "gpt-4o",
+        "temperature": 0.7,
+        "max_tokens": 4000
+      },
+      "mapper": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 상품 리뷰 전문 작가입니다. GitHub에서 받은 상품 정보를 바탕으로 진정성 있는 리뷰 글을 작성합니다."
+          },
+          {
+            "role": "user", 
+            "content": "다음 상품 정보를 바탕으로 상품 리뷰 블로그 글을 작성해주세요:\n\n{{3.content}}\n\n요구사항:\n1. 20250619 최종 지침의 상품 리뷰 모드 적용\n2. 30대 여성 리뷰어 스타일\n3. 실제 사용 경험담 형식\n4. 장점 5개, 단점 2개 상세 설명\n5. FAQ 3개 포함\n6. 평가 항목별 별점\n7. 구매 링크 및 CTA 포함\n\n가장 최근에 업데이트된 상품 1개를 선택하여 리뷰를 작성해주세요."
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 1200, "y": 100 },
+        "route": "products_route"
+      }
+    },
+    {
+      "id": 7,
+      "module": "openai:FunctionCall",
+      "version": 1,
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.3,
+        "max_tokens": 2000
+      },
+      "mapper": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "다음 블로그 글에 맞는 HTML CTA 버튼 3종류를 생성해주세요:\n\n{{if(exists(5.choices[]); 5.choices[].message.content; 6.choices[].message.content)}}\n\n요구사항:\n1. 기본 CTA, 긴급 특가, 최저가 확인 3종류\n2. 반응형 디자인\n3. 호버 효과 포함\n4. 20%, 50%, 90% 지점 배치 안내\n5. 쿠팡 파트너스 문구 포함\n\n완벽한 HTML 코드만 출력해주세요."
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 1500, "y": 0 }
+      }
+    },
+    {
+      "id": 8,
+      "module": "openai:FunctionCall",
+      "version": 1,
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.1,
+        "max_tokens": 100
+      },
+      "mapper": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "다음 블로그 글에서 제목만 정확히 추출해주세요:\n\n{{if(exists(5.choices[]); 5.choices[].message.content; 6.choices[].message.content)}}\n\n제목만 출력하고 다른 내용은 포함하지 마세요."
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 1800, "y": 0 }
+      }
+    },
+    {
+      "id": 9,
+      "module": "wordpress:createPost",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "title": "{{8.choices[].message.content}}",
+        "content": "{{if(exists(5.choices[]); 5.choices[].message.content; 6.choices[].message.content)}}\n\n{{7.choices[].message.content}}",
+        "status": "draft",
+        "post_type": "post",
+        "categories": ["{{if(2.file_type = \"keywords\"; \"블로그\"; \"리뷰\")}}"],
+        "tags": "{{if(exists(5.choices[]); \"AI 블로그, 자동화\"; \"상품 리뷰, 추천\")}}, GitHub 연동"
+      },
+      "metadata": {
+        "designer": { "x": 2100, "y": 0 }
+      }
+    },
+    {
+      "id": 10,
+      "module": "github:createFile",
+      "version": 1,
+      "parameters": {
+        "repository": "YOUR_GITHUB_USERNAME/blog-automation",
+        "branch": "main"
+      },
+      "mapper": {
+        "path": "content/published/{{formatDate(now; \"YYYY-MM-DD\")}}-{{replace(8.choices[].message.content; \" \"; \"-\")}}.md",
+        "content": "# {{8.choices[].message.content}}\n\n> 자동 생성일: {{2.today}}\n> 소스 파일: {{1.path}}\n> 워드프레스 ID: {{9.id}}\n\n{{if(exists(5.choices[]); 5.choices[].message.content; 6.choices[].message.content)}}\n\n{{7.choices[].message.content}}",
+        "message": "자동 생성: {{8.choices[].message.content}} [{{2.today}}]"
+      },
+      "metadata": {
+        "designer": { "x": 2400, "y": 0 }
+      }
+    },
+    {
+      "id": 11,
+      "module": "google-sheets:addRow",
+      "version": 1,
+      "parameters": {
+        "spreadsheetId": "",
+        "sheetName": "GitHub_블로그_자동화_로그"
+      },
+      "mapper": {
+        "values": [
+          "{{2.today}}",
+          "{{1.path}}",
+          "{{2.file_type}}",
+          "{{8.choices[].message.content}}",
+          "{{9.permalink}}",
+          "{{10.sha}}",
+          "자동 생성 완료"
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 2700, "y": 0 }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": false,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us2.make.com"
+  }
+}

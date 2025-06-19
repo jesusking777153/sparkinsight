@@ -1,0 +1,38 @@
+{
+  "webhook_config": {
+    "github_events": ["push", "pull_request"],
+    "target_files": ["*.md", "*.csv", "*.json"],
+    "make_webhook_url": "https://hook.integromat.com/YOUR_WEBHOOK_URL",
+    "automation_triggers": {
+      "new_markdown": "create_blog_post",
+      "updated_csv": "bulk_content_generation", 
+      "new_json": "data_visualization_post"
+    }
+  },
+  "content_rules": {
+    "min_length": 3500,
+    "max_length": 4500,
+    "required_elements": [
+      "채팅체 표현 20회 이상",
+      "개인 경험담 3개 이상", 
+      "질문형 문장 5개 이상",
+      "CTA 버튼 3개",
+      "H2/H3 태그 사용"
+    ],
+    "seo_requirements": {
+      "keyword_density": "1-2%",
+      "meta_description": "150-160자",
+      "title_formula": "[숫자] + [충격요소] + [구체적효과] + [시간프레임]"
+    }
+  },
+  "output_settings": {
+    "wordpress_status": "draft",
+    "auto_categories": ["블로그"],
+    "auto_tags": "키워드 기반 생성",
+    "cta_buttons": {
+      "position_1": "20% - 기본 CTA",
+      "position_2": "50% - 긴급 특가", 
+      "position_3": "90% - 최저가 확인"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "삼성 갤럭시북4 프로",
+      "category": "노트북",
+      "price": 1299000,
+      "coupang_url": "https://link.coupang.com/a/bUvQpm",
+      "keywords": ["노트북 추천", "삼성 노트북", "갤럭시북"],
+      "description": "14인치 OLED 디스플레이, 인텔 코어 Ultra7",
+      "rating": 4.5,
+      "last_updated": "2025-06-20"
+    },
+    {
+      "id": 2,
+      "name": "설악산 유기농 딸기",
+      "category": "과일",
+      "price": 25000,
+      "coupang_url": "https://kormeme.com",
+      "keywords": ["여름 딸기", "유기농 딸기", "설악산 딸기"],
+      "description": "당도 높은 프리미엄 여름 딸기",
+      "rating": 4.8,
+      "last_updated": "2025-06-20"
+    },
+    {
+      "id": 3,
+      "name": "다이어트 도시락",
+      "category": "건강식품",
+      "price": 8900,
+      "coupang_url": "https://kormeme.com",
+      "keywords": ["다이어트 방법", "건강식품", "다이어트 도시락"],
+      "description": "칼로리 컨트롤된 건강 도시락",
+      "rating": 4.3,
+      "last_updated": "2025-06-20"
+    },
+    {
+      "id": 4,
+      "name": "ChatGPT 활용 가이드북",
+      "category": "도서",
+      "price": 18000,
+      "coupang_url": "https://kormeme.com",
+      "keywords": ["AI 트렌드", "ChatGPT", "AI 활용"],
+      "description": "AI 시대 필수 가이드북",
+      "rating": 4.6,
+      "last_updated": "2025-06-20"
+    },
+    {
+      "id": 5,
+      "name": "블로그 수익화 강의",
+      "category": "교육",
+      "price": 99000,
+      "coupang_url": "https://kormeme.com",
+      "keywords": ["블로그 수익", "블로그 마케팅", "수익화"],
+      "description": "월 100만원 블로그 수익 만들기",
+      "rating": 4.7,
+      "last_updated": "2025-06-20"
+    }
+  ],
+  "settings": {
+    "auto_update": true,
+    "price_check_interval": "daily",
+    "default_commission": 3.5
+  }
+}
